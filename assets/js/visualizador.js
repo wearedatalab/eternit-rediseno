@@ -15,8 +15,9 @@
   if (!visor) return;
   const $ = (s, el = visor) => el.querySelector(s);
   const $$ = (s, el = visor) => [...el.querySelectorAll(s)];
-  const API = '/api/visualizador';
-  const VERSION = 3; // debe coincidir con VERSION_VISOR de herramientas/servidor.py
+  const API = 'https://eternit-visualizador.vercel.app/api/visualizador'; // en la demo en línea, herramientas/publicar.mjs lo cambia por la función en la nube
+  const VERSION = 3; // debe coincidir con VERSION_VISOR de herramientas/visualizador_ia.py
+  const MAX_ENVIO = 4_200_000; // la función en la nube recibe hasta 4,5 MB por solicitud: si pasa, se baja la calidad JPEG
   const LADO = 2048; // lado largo de la foto de trabajo: cabe en la salida 2K de la IA
   const MIN_LADO = 1000; // por debajo, el resultado se ve borroso
   const MAX_MB = 40; // la foto se reduce en el celular: al servidor solo viajan 1–3 MB
@@ -25,7 +26,11 @@
   const FRASES = ['Midiendo la superficie', 'Ubicando la zona marcada', 'Cortando las placas a la medida', 'Alineando las juntas', 'Ajustando la luz y las sombras', 'Últimos detalles del acabado'];
   const reducir = matchMedia('(prefers-reduced-motion: reduce)');
   const e = { foto: null, ancho: 0, alto: 0, marco: null, zonas: [], actual: [] };
-  const imagen = (src) => new Promise((ok, mal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = mal; i.src = src; });
+  const imagen = (src) => new Promise((ok, mal) => {
+    const i = new Image();
+    if (/^https?:/.test(src)) i.crossOrigin = 'anonymous'; // imagen que el navegador baja directo: sin esto el lienzo queda bloqueado
+    i.onload = () => ok(i); i.onerror = mal; i.src = src;
+  });
 
   // Avisos: «error» (rojo) cuando algo no se pudo hacer; «nota» (ámbar) cuando se puede seguir pero conviene saberlo
   const aviso = $('[data-visor-aviso]');
@@ -44,9 +49,9 @@
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then((d) => {
       if (!d.configurado) avisar('El visualizador no está configurado en este servidor: falta la clave del servicio de IA. Avísale al administrador del portal.');
-      else if (!d.restantes) avisar(`Se alcanzó el límite de ${d.limite} simulaciones por hora de esta demo. Intenta de nuevo más tarde.`);
+      else if (!d.restantes) avisar(`Se alcanzó el límite de ${d.limite} simulaciones por ${d.periodo || 'hora'} de esta demo. Intenta de nuevo más tarde.`);
     })
-    .catch(() => avisar('En esta demo en línea el visualizador no genera simulaciones: eso lo hace el servidor del portal de distribuidores.'));
+    .catch(() => avisar('No hay conexión con el servicio de simulación. Revisa tu conexión a internet y recarga la página.'));
 
   /* ---------- Pasos ---------- */
   const lienzo = $('[data-visor-lienzo]'), soltar = $('[data-visor-soltar]'), comparar = $('[data-visor-comparar]');
@@ -335,8 +340,20 @@
   const pedir = async (cuerpo) => {
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) });
     const d = await r.json().catch(() => ({}));
+    d.imagen ||= d.imagen_url; // si la imagen pesa más de lo que deja responder la nube, llega su dirección
     if (!r.ok || !d.imagen) throw new Error(d.error || `El servidor del portal respondió con un error (${r.status}). Intenta de nuevo en un momento.`);
     return d;
+  };
+  // Foto y guía en JPEG: si juntas pasan del tope de envío, se repiten con menos calidad (la guía solo marca la zona)
+  const armar = (foto, conZonas) => {
+    const fotoMarco = enMarco(foto), guiaMarco = conZonas ? guiaEnMarco(foto) : null, mascara = conZonas ? mascaraEnMarco().toDataURL('image/png') : null;
+    let cuerpo;
+    for (const [qf, qg] of [[0.9, 0.88], [0.84, 0.74], [0.76, 0.6], [0.68, 0.5], [0.6, 0.42]]) {
+      cuerpo = { version: VERSION, foto: fotoMarco.toDataURL('image/jpeg', qf), relleno: e.marco.relleno, acabado: $('input[name="acabado"]:checked').value, calidad: $('input[name="calidad"]:checked').value, instrucciones: $('[data-visor-notas]').value.trim(), intento: 1 };
+      if (conZonas) Object.assign(cuerpo, { guia: guiaMarco.toDataURL('image/jpeg', qg), mascara });
+      if (JSON.stringify(cuerpo).length <= MAX_ENVIO) break;
+    }
+    return cuerpo;
   };
   $('[data-visor-generar]').addEventListener('click', async () => {
     const elegido = $('input[name="acabado"]:checked');
@@ -345,8 +362,7 @@
     esperar(true);
     try {
       const foto = await imagen(e.foto);
-      const cuerpo = { version: VERSION, foto: enMarco(foto).toDataURL('image/jpeg', 0.9), relleno: e.marco.relleno, acabado: elegido.value, calidad: $('input[name="calidad"]:checked').value, instrucciones: $('[data-visor-notas]').value.trim(), intento: 1 };
-      if (conZonas) Object.assign(cuerpo, { guia: guiaEnMarco(foto).toDataURL('image/jpeg', 0.88), mascara: mascaraEnMarco().toDataURL('image/png') });
+      const cuerpo = armar(foto, conZonas);
       let d = await pedir(cuerpo), segundos = d.segundos, alineada = await alinear(d.imagen);
       // Si la IA dejó la zona casi igual o corrió el encuadre, se repite una vez con la instrucción reforzada
       // para ese motivo y se queda el mejor de los dos intentos.
