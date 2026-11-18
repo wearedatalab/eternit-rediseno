@@ -1,0 +1,239 @@
+/* ==========================================================================
+   Opciones de color de la home (7 de noviembre de 2026)
+   Al cliente no le gusta tanto el negro. Tres opciones para la portada, que se eligen en el menú
+   «Opciones de home». Solo se carga en inicio/gris/, inicio/blanco/ e inicio/datalab/; el resto del sitio
+   sigue en la v5. Cada opción redefine tokens y ajusta los componentes que pintaban negro.
+   Los contrastes de cada pareja están verificados (WCAG 2.2 AA: 4,5:1 en texto y 3:1 en bordes de control).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Opción 1 · Más gris: un gris cálido de fibrocemento toma el lugar del negro.
+   #5b5650 con texto blanco: 7,1:1. Como texto sobre papel: 6,4:1. El texto largo usa un gris
+   muy oscuro (#2e2a26, 12,6:1), nunca negro.
+   -------------------------------------------------------------------------- */
+html[data-tema='gris'] {
+  --tinta: #5b5650;
+  --grafito: #6a655e;
+  --color-texto: #2e2a26;
+  --linea: rgb(46 42 38 / .14);
+}
+[data-tema='gris'] .banner--grafito { --fondo: #6a655e; --disco: #7a756e; }
+[data-tema='gris'] .carrusel__controles { background: rgb(91 86 80 / .6); }
+[data-tema='gris'] .presencia::before { background: linear-gradient(90deg, var(--tinta) 22%, rgb(91 86 80 / .55)); }
+/* Textos claros sobre el gris: un poco más opacos para no bajar de 4,5:1 */
+[data-tema='gris'] .pie h2, [data-tema='gris'] .pie__legal { color: rgb(255 253 249 / .86); }
+[data-tema='gris'] .pie__buscar input::placeholder { color: rgb(255 253 249 / .86); }
+[data-tema='gris'] .datos--claro dt, [data-tema='gris'] .datos--claro dd small { color: rgb(255 253 249 / .92); }
+[data-tema='gris'] .presencia__texto > p:not(.etiqueta) { color: rgb(255 253 249 / .92); }
+
+/* --------------------------------------------------------------------------
+   Opción 2 · Más blanco: blanco donde había negro. Las superficies blancas se separan con bordes
+   suaves y sombra; los botones que eran negros pasan a blancos con borde de 3:1.
+   -------------------------------------------------------------------------- */
+html[data-tema='blanco'] {
+  --tinta: #2e2a26;
+  --color-texto: #2e2a26;
+  --linea: rgb(46 42 38 / .12);
+}
+/* Barra de servicio */
+[data-tema='blanco'] .cab__util { --color-foco: var(--rojo); background: var(--blanco); color: var(--gris); box-shadow: inset 0 -1px 0 var(--linea); }
+[data-tema='blanco'] .cab__util a:hover { color: var(--tinta); }
+[data-tema='blanco'] .cab__portal { background: var(--papel); color: var(--tinta); }
+/* Botones y píldoras que eran negros */
+[data-tema='blanco'] .btn--tinta { --bg: var(--blanco); --fg: var(--tinta); --bd: var(--color-borde-control); --hover: var(--cemento); }
+[data-tema='blanco'] .btn--tinta:hover { color: var(--tinta); border-color: var(--tinta); }
+[data-tema='blanco'] .buscador__ir { background: var(--blanco); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--color-borde-control); }
+[data-tema='blanco'] .buscador__ir:hover { background: var(--cemento); }
+[data-tema='blanco'] .cab__cats .cab__ia button { background: var(--blanco); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--color-borde-control); }
+[data-tema='blanco'] .cab__cats .cab__ia button:hover { background: var(--cemento); }
+[data-tema='blanco'] .res__todos { background: var(--cemento); color: var(--tinta); }
+[data-tema='blanco'] .arco__ir { background: var(--blanco); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--color-borde-control); }
+[data-tema='blanco'] .arco:hover .arco__ir { background: var(--acento); color: var(--blanco); box-shadow: none; }
+[data-tema='blanco'] .caminos a:hover { background: var(--blanco); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--rojo); }
+[data-tema='blanco'] .evolucion__enlaces a:hover { background: var(--blanco); color: var(--rojo-hondo); box-shadow: inset 0 0 0 1.5px var(--rojo); }
+/* Pestañas de clima: la elegida es blanca y lleva una raya roja (dos señales, no solo el color) */
+[data-tema='blanco'] .clima__tabs button[aria-selected='true'] { background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra-2), inset 0 -3px 0 var(--rojo); }
+[data-tema='blanco'] .clima__escena { background: var(--cemento); }
+/* Banners */
+[data-tema='blanco'] .carrusel { background: var(--blanco); }
+[data-tema='blanco'] .banner--rojo .banner__etiqueta { background: var(--blanco); color: var(--rojo-hondo); }
+[data-tema='blanco'] .banner__insignia { background: var(--blanco); color: var(--tinta); }
+[data-tema='blanco'] .banner--grafito { --fondo: var(--blanco); --texto: var(--tinta); --disco: var(--papel); --suave: rgb(46 42 38 / .06); --color-foco: var(--rojo); }
+[data-tema='blanco'] .banner--grafito .btn--blanco { --bg: var(--rojo); --fg: var(--blanco); --bd: var(--rojo); --hover: var(--rojo-hondo); }
+[data-tema='blanco'] .banner--grafito .btn--linea { --fg: var(--tinta); --bd: var(--color-borde-control); --hover: var(--papel); }
+[data-tema='blanco'] .banner--grafito .banner__muestras .img { box-shadow: 0 0 0 3px var(--blanco), 0 4px 12px rgb(46 42 38 / .2); }
+[data-tema='blanco'] .carrusel__controles { background: rgb(255 253 249 / .94); box-shadow: var(--sombra-2); }
+[data-tema='blanco'] .carrusel__boton { box-shadow: inset 0 0 0 1px var(--color-borde-control); }
+[data-tema='blanco'] .carrusel__puntos span { background: rgb(46 42 38 / .32); }
+[data-tema='blanco'] .carrusel__puntos [aria-current='true'] span { background: var(--rojo); }
+[data-tema='blanco'] .carrusel { --color-foco: var(--rojo); }
+/* Presencia: banda clara con la foto de la planta al fondo, apenas visible */
+[data-tema='blanco'] .presencia { --color-foco: var(--rojo); background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra); }
+[data-tema='blanco'] .presencia::before { background: linear-gradient(90deg, var(--blanco) 28%, rgb(255 253 249 / .72)); }
+[data-tema='blanco'] .presencia__foto { opacity: .4; }
+[data-tema='blanco'] .presencia__texto > p:not(.etiqueta) { color: var(--gris); }
+[data-tema='blanco'] .presencia .etiqueta--clara { background: var(--blanco); color: var(--tinta); box-shadow: inset 0 0 0 1px var(--linea); }
+[data-tema='blanco'] .datos--claro > div { background: var(--blanco); box-shadow: var(--sombra), inset 0 0 0 1px var(--linea); }
+[data-tema='blanco'] .datos--claro dt, [data-tema='blanco'] .datos--claro dd small { color: var(--gris); }
+[data-tema='blanco'] .mapa__trama, [data-tema='blanco'] #puntos circle { fill: rgb(46 42 38 / .24); }
+[data-tema='blanco'] .mapa__borde { stroke: rgb(46 42 38 / .45); }
+[data-tema='blanco'] .mapa__planta text { fill: var(--tinta); stroke: var(--blanco); }
+/* Pie claro */
+[data-tema='blanco'] .pie { --color-foco: var(--rojo); background: var(--blanco); color: var(--gris); box-shadow: 0 -1px 0 var(--linea); }
+[data-tema='blanco'] .pie__arriba, [data-tema='blanco'] .pie__grid { border-color: var(--linea); }
+[data-tema='blanco'] .pie__lema { color: var(--tinta); }
+[data-tema='blanco'] .pie h2, [data-tema='blanco'] .pie__legal { color: var(--gris); }
+[data-tema='blanco'] .pie a:hover { color: var(--rojo-hondo); }
+[data-tema='blanco'] .pie__buscar { background: var(--papel); border-color: var(--color-borde-control); }
+[data-tema='blanco'] .pie__buscar input { color: var(--tinta); }
+[data-tema='blanco'] .pie__buscar input::placeholder { color: var(--color-placeholder); }
+[data-tema='blanco'] .pie__wa { background: var(--papel); }
+[data-tema='blanco'] .pie__wa:hover { background: var(--cemento); }
+[data-tema='blanco'] .pie__redes a { border-color: var(--color-borde-control); }
+[data-tema='blanco'] .pie__elementia { box-shadow: inset 0 0 0 1px var(--linea); }
+/* Dock del celular, chat y avisos */
+[data-tema='blanco'] .dock { --color-foco: var(--rojo); background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra-3), inset 0 0 0 1px var(--linea); }
+[data-tema='blanco'] .chat-boton__t { background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra-2), inset 0 0 0 1px var(--linea); }
+[data-tema='blanco'] .burbuja--yo { background: var(--cemento); color: var(--tinta); }
+[data-tema='blanco'] .saltar { --color-foco: var(--rojo); background: var(--blanco); color: var(--tinta); box-shadow: var(--sombra-2); }
+[data-tema='blanco'] .contador { background: var(--rojo); }
+[data-tema='blanco'] .obra { background: var(--cemento); }
+
+/* --------------------------------------------------------------------------
+   Opción 3 · Propuesta DataLab, con la paleta del manual de buenas prácticas (sección 7).
+   - Dos escalas de 12 tonos con un trabajo cada uno, como Radix: «Piedra» (los neutros cálidos del
+     fibrocemento) y «Rojo Eternit».
+   - Proporción 60-30-10: 60 % neutros claros, 30 % piedra y 10 % rojo. El rojo queda para la acción
+     principal y los elementos activos.
+   - Sin negro: el texto de alto contraste es piedra-12 (#2b2723, 13,1:1 sobre papel).
+   - Contrastes:
+     - piedra-11 sobre papel: 6,9:1;
+     - piedra-10 con texto blanco: 6,4:1;
+     - piedra-8 como borde de control sobre papel: 3,1:1;
+     - rojo-11 como texto sobre blanco: 6,9:1;
+     - rojo-9 con texto blanco: 5,2:1.
+   - Cabecera blanca con el logo rojo: el rojo deja de ser una franja y queda como acento.
+   -------------------------------------------------------------------------- */
+html[data-tema='datalab'] {
+  --piedra-1: #fbf9f5;  /* 1 fondo de la aplicación */
+  --piedra-2: #f4f1eb;  /* 2 fondo sutil */
+  --piedra-3: #ece8e1;  /* 3 fondo de componente */
+  --piedra-4: #e6e2da;  /* 4 fondo al pasar el cursor */
+  --piedra-5: #ddd8cf;  /* 5 fondo activo o seleccionado */
+  --piedra-6: #d2ccc2;  /* 6 bordes sutiles */
+  --piedra-7: #bfb8ad;  /* 7 bordes de elementos interactivos decorativos */
+  --piedra-8: #8f897f;  /* 8 bordes de control y anillos (3:1) */
+  --piedra-9: #6f695f;  /* 9 superficie sólida */
+  --piedra-10: #635d54; /* 10 superficie sólida al pasar el cursor; banda gris con texto blanco */
+  --piedra-11: #57524b; /* 11 texto de bajo contraste */
+  --piedra-12: #2b2723; /* 12 texto de alto contraste */
+  --rojo-1: #fffbfa; --rojo-2: #fff3f1; --rojo-3: #ffe6e2; --rojo-4: #ffd7d1; --rojo-5: #ffc5bd; --rojo-6: #f8aea4;
+  --rojo-7: #ee8c80; --rojo-8: #e2675b; --rojo-9: #d61118; --rojo-10: #bf0f15; --rojo-11: #b3120f; --rojo-12: #5c0d0b;
+
+  --papel: var(--piedra-2);
+  --cemento: var(--piedra-4);
+  --tinta: var(--piedra-12);
+  --grafito: var(--piedra-10);
+  --gris: var(--piedra-11);
+  --gris-medio: var(--piedra-8);
+  --rojo-hondo: var(--rojo-10);
+  --linea: rgb(43 39 35 / .12);
+  --color-texto: var(--piedra-12);
+  --color-texto-2: var(--piedra-11);
+  --color-borde-sutil: var(--piedra-6);
+  --color-borde-control: var(--piedra-8);
+  --color-accion: var(--rojo-9);
+  --color-accion-hover: var(--rojo-10);
+}
+/* Cabecera blanca: logo rojo, búsqueda como campo con borde y «Buscar» como acción principal en rojo */
+[data-tema='datalab'] .cab__util { --color-foco: var(--rojo-9); background: var(--piedra-3); color: var(--piedra-11); }
+[data-tema='datalab'] .cab__util a:hover { color: var(--piedra-12); }
+[data-tema='datalab'] .cab__portal { background: var(--blanco); color: var(--piedra-12); box-shadow: inset 0 0 0 1px var(--piedra-6); }
+[data-tema='datalab'] .cab__main { --color-foco: var(--rojo-9); background: var(--blanco); color: var(--piedra-12); box-shadow: inset 0 -1px 0 var(--piedra-6); }
+[data-tema='datalab'] .buscador { background: var(--piedra-2); box-shadow: inset 0 0 0 1px var(--piedra-8); }
+[data-tema='datalab'] .buscador:focus-within { outline-color: var(--rojo-9); }
+[data-tema='datalab'] .buscador__ir { background: var(--rojo-9); color: var(--blanco); }
+[data-tema='datalab'] .buscador__ir:hover { background: var(--rojo-10); }
+[data-tema='datalab'] .cab__accesos a { color: var(--piedra-11); }
+[data-tema='datalab'] .cab__accesos a:hover { background: var(--piedra-3); color: var(--rojo-11); }
+[data-tema='datalab'] .cab__menu { background: var(--piedra-3); }
+[data-tema='datalab'] .cab__menu span { background: var(--piedra-12); }
+[data-tema='datalab'] .cab__cats { box-shadow: inset 0 -1px 0 var(--piedra-6); }
+[data-tema='datalab'] .cab__cats > ul > li > a:hover, [data-tema='datalab'] .cab__cats > ul > li > a[aria-current], [data-tema='datalab'] .mega:hover > a { background: var(--piedra-3); }
+/* «Pregúntale a Eternit»: botón tonal (rojo suave), importante pero no la acción principal */
+[data-tema='datalab'] .cab__cats .cab__ia button { background: var(--rojo-3); color: var(--rojo-11); }
+[data-tema='datalab'] .cab__cats .cab__ia button:hover { background: var(--rojo-4); }
+[data-tema='datalab'] .menu-movil__cab { background: var(--blanco); box-shadow: inset 0 -1px 0 var(--piedra-6); }
+/* Botones: el que era negro pasa a secundario con borde; el rojo queda para la acción principal */
+[data-tema='datalab'] .btn--tinta { --bg: var(--blanco); --fg: var(--piedra-12); --bd: var(--piedra-8); --hover: var(--piedra-3); }
+[data-tema='datalab'] .btn--tinta:hover { color: var(--piedra-12); border-color: var(--piedra-12); }
+[data-tema='datalab'] .res__todos { background: var(--piedra-3); color: var(--piedra-12); }
+/* Banners: la campaña gris usa piedra; los controles del carrusel son claros y el punto activo es rojo */
+[data-tema='datalab'] .carrusel { --color-foco: var(--rojo-9); background: var(--piedra-4); }
+[data-tema='datalab'] .banner--grafito { --fondo: var(--piedra-10); --disco: var(--piedra-9); --color-foco: var(--blanco); }
+[data-tema='datalab'] .banner--rojo .banner__etiqueta { background: var(--blanco); color: var(--rojo-11); }
+[data-tema='datalab'] .banner__insignia { background: var(--blanco); color: var(--piedra-12); }
+[data-tema='datalab'] .carrusel__controles { background: rgb(255 253 249 / .94); box-shadow: var(--sombra-2); }
+[data-tema='datalab'] .carrusel__boton { box-shadow: inset 0 0 0 1px var(--piedra-6); }
+[data-tema='datalab'] .carrusel__puntos span { background: var(--piedra-7); }
+[data-tema='datalab'] .carrusel__puntos [aria-current='true'] span { background: var(--rojo-9); }
+/* Accesos rápidos, sistemas y clima: el estado activo es rojo (rol primario), el resto piedra */
+[data-tema='datalab'] .caminos a { background: var(--piedra-2); }
+[data-tema='datalab'] .caminos a:hover { background: var(--rojo-3); color: var(--rojo-12); }
+[data-tema='datalab'] .arco__ir { background: var(--piedra-3); color: var(--piedra-12); }
+[data-tema='datalab'] .clima__tabs { background: var(--piedra-3); }
+[data-tema='datalab'] .clima__tabs button[aria-selected='true'] { background: var(--rojo-9); color: var(--blanco); }
+[data-tema='datalab'] .clima__tabs button:not([aria-selected='true']):hover { background: var(--piedra-5); }
+[data-tema='datalab'] .clima__escena { background: var(--piedra-4); }
+[data-tema='datalab'] .evolucion { background: var(--piedra-3); }
+[data-tema='datalab'] .evolucion__enlaces a:hover { background: var(--rojo-3); color: var(--rojo-11); }
+/* Presencia: banda de piedra con texto blanco (6,4:1) en lugar de negro */
+[data-tema='datalab'] .presencia { background: var(--piedra-10); }
+[data-tema='datalab'] .presencia::before { background: linear-gradient(90deg, var(--piedra-10) 24%, rgb(99 93 84 / .5)); }
+[data-tema='datalab'] .presencia__texto > p:not(.etiqueta) { color: var(--blanco); }
+[data-tema='datalab'] .datos--claro > div { background: rgb(255 253 249 / .1); }
+[data-tema='datalab'] .datos--claro dt, [data-tema='datalab'] .datos--claro dd small { color: var(--blanco); }
+/* Cierre: el rojo deja de ser una franja; fondo claro, título con acento rojo y una sola acción en rojo */
+[data-tema='datalab'] .cierre { --color-foco: var(--rojo-9); background: var(--blanco); color: var(--piedra-12); box-shadow: var(--sombra); }
+[data-tema='datalab'] .cierre__titulo em { color: var(--rojo-9); }
+[data-tema='datalab'] .cierre__texto > p { color: var(--piedra-11); }
+[data-tema='datalab'] .cierre .btn--blanco { --bg: var(--rojo-9); --fg: var(--blanco); --bd: var(--rojo-9); --hover: var(--rojo-10); }
+[data-tema='datalab'] .cierre .btn--blanco:hover { color: var(--blanco); }
+[data-tema='datalab'] .cierre .btn--linea { --fg: var(--piedra-12); --bd: var(--piedra-8); --hover: var(--piedra-3); }
+[data-tema='datalab'] .cierre .btn--linea:hover { color: var(--piedra-12); }
+/* Pie claro en piedra 3, con el logo rojo */
+[data-tema='datalab'] .pie { --color-foco: var(--rojo-9); background: var(--piedra-3); color: var(--piedra-11); }
+[data-tema='datalab'] .pie__arriba, [data-tema='datalab'] .pie__grid { border-color: var(--piedra-6); }
+[data-tema='datalab'] .pie__lema { color: var(--piedra-12); }
+[data-tema='datalab'] .pie h2, [data-tema='datalab'] .pie__legal { color: var(--piedra-11); }
+[data-tema='datalab'] .pie a:hover { color: var(--rojo-11); }
+[data-tema='datalab'] .pie__buscar { background: var(--blanco); border-color: var(--piedra-8); }
+[data-tema='datalab'] .pie__buscar input { color: var(--piedra-12); }
+[data-tema='datalab'] .pie__buscar input::placeholder { color: var(--piedra-11); }
+[data-tema='datalab'] .pie__wa { background: var(--blanco); }
+[data-tema='datalab'] .pie__wa:hover { background: var(--piedra-4); }
+[data-tema='datalab'] .pie__redes a { border-color: var(--piedra-8); }
+/* Dock, chat y avisos */
+[data-tema='datalab'] .dock { --color-foco: var(--rojo-9); background: var(--blanco); color: var(--piedra-12); box-shadow: var(--sombra-3), inset 0 0 0 1px var(--piedra-6); }
+[data-tema='datalab'] .chat-boton__t { background: var(--blanco); color: var(--piedra-12); box-shadow: var(--sombra-2), inset 0 0 0 1px var(--piedra-6); }
+[data-tema='datalab'] .burbuja--yo { background: var(--piedra-4); color: var(--piedra-12); }
+[data-tema='datalab'] .saltar { --color-foco: var(--rojo-9); background: var(--blanco); color: var(--piedra-12); box-shadow: var(--sombra-2); }
+[data-tema='datalab'] .contador { background: var(--rojo-9); }
+[data-tema='datalab'] .obra { background: var(--piedra-4); }
+/* Enlaces dentro de párrafos: rojo 11 subrayado (6,9:1) */
+[data-tema='datalab'] main p a:not([class]) { color: var(--rojo-11); }
+
+/* --------------------------------------------------------------------------
+   Ajustes comunes a las tres opciones
+   -------------------------------------------------------------------------- */
+/* Presencia: la foto de la planta se desvanece hacia el lado del texto con una máscara. El texto queda
+   sobre el color liso de la banda y el rótulo «Imagen ilustrativa» sigue a la vista. */
+[data-tema] .presencia__foto { opacity: .4; -webkit-mask-image: linear-gradient(90deg, transparent 32%, #000 78%); mask-image: linear-gradient(90deg, transparent 32%, #000 78%); }
+[data-tema='blanco'] .presencia__foto { opacity: .32; }
+/* Cierre rojo (gris y blanco): «Hablemos.» ya no puede ser negro; va en caja blanca con letra roja,
+   como los titulares de los banners (5,2:1) */
+[data-tema='gris'] .cierre__titulo em, [data-tema='blanco'] .cierre__titulo em { width: fit-content; margin-top: var(--espacio-1); padding: 0 .16em .06em; border-radius: var(--radio-2); background: var(--blanco); color: var(--rojo); }
+/* Banner ocre (pinturas) en la opción gris: su texto oscuro pasa a gris muy oscuro, no al gris de las superficies (6,4:1) */
+[data-tema='gris'] .banner--ocre { --texto: var(--color-texto); }
+[data-tema='gris'] .banner--ocre .btn--linea-tinta { --fg: var(--color-texto); --bd: var(--color-texto); }
+/* El sello «Garantía» del banner de Eterboard Design va sobre la foto (pared oscura): se queda blanco con sombra */
