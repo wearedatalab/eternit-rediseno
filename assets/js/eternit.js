@@ -387,12 +387,23 @@
   }));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') puntos.forEach((x) => x.setAttribute('aria-expanded', 'false')); });
 
+  /* ---------- Fotos que cambian por capas (color de la teja; tanque.js hace lo mismo con la capacidad) ----------
+     La capa nueva entra encima, invisible, y aparece cuando su foto ya se puede pintar; solo entonces se quitan las
+     capas que ya estaban. Si se elige otra opción antes, esa capa no aparece y la quita la elección más nueva. Así la
+     escena nunca se queda vacía por rápido que se cambie (antes, dos cambios seguidos se borraban entre sí). */
+  const fotoLista = (img) => img.decode().catch(() => (img.complete ? null
+    : new Promise((listo) => { img.addEventListener('load', listo, { once: true }); img.addEventListener('error', listo, { once: true }); })));
+
   /* ---------- Producto: color de la teja sobre la casa ---------- */
   const config = $('[data-color-config]');
   if (config) {
     const fuentes = JSON.parse(config.dataset.colorConfig);
     const escena = $('.ph__escena', config);
     const nombre = $('[data-color-nombre]', config);
+    const molde = $('.img', escena).cloneNode(true); // la foto del HTML, guardada antes de que otra capa la reemplace
+    molde.style.viewTransitionName = 'none';
+    $('img', molde).removeAttribute('fetchpriority');
+    let turno = 0;
     const precargadas = new Set();
     const precargar = (id) => {
       if (precargadas.has(id)) return;
@@ -403,22 +414,20 @@
       inp.parentElement.addEventListener('pointerenter', () => precargar(inp.value));
       inp.addEventListener('focus', () => precargar(inp.value));
       inp.addEventListener('change', () => {
-        const actual = $$('.img', escena).at(-1);
-        const nueva = actual.cloneNode(true);
-        nueva.style.viewTransitionName = 'none';
+        const mio = ++turno, previas = $$('.img', escena);
+        const nueva = molde.cloneNode(true);
         nueva.style.opacity = '0';
         $('source[type="image/avif"]', nueva).srcset = fuentes[inp.value].avif;
         $('source[type="image/webp"]', nueva).srcset = fuentes[inp.value].webp;
         const img = $('img', nueva);
-        img.removeAttribute('fetchpriority');
         img.alt = `Casa campestre con cubierta de Teja Ondulada Perfil 7 en color ${inp.dataset.nombre.toLowerCase()}`;
         escena.append(nueva);
         nombre.textContent = inp.dataset.nombre;
-        const mostrar = () => requestAnimationFrame(() => {
+        fotoLista(img).then(() => requestAnimationFrame(() => {
+          if (mio !== turno) return; // ya se eligió otro color: esta capa se va con las previas de esa elección
           nueva.style.opacity = '1';
-          setTimeout(() => $$('.img', escena).forEach((n) => n !== nueva && n.remove()), 700);
-        });
-        img.decode().then(mostrar, mostrar);
+          setTimeout(() => previas.forEach((n) => n.remove()), 700);
+        }));
       });
     });
   }
@@ -434,10 +443,12 @@
       precargadas.add(id);
       const i = new Image(); i.sizes = $('img', baseTeja).sizes; i.srcset = fuentes[id].webp;
     };
+    let turno = 0;
     $$('input[name="teja-color"]').forEach((inp) => {
       inp.parentElement.addEventListener('pointerenter', () => precargar(inp.value));
       inp.addEventListener('focus', () => precargar(inp.value));
       inp.addEventListener('change', () => {
+        const mio = ++turno;
         if (nombreTeja) nombreTeja.textContent = inp.dataset.nombre;
         const capas = $$('.icono__capa', visualTeja);
         if (inp.value === 'gris') { // vuelve la foto original: se desvanecen las capas de color
@@ -454,11 +465,11 @@
         img.removeAttribute('fetchpriority'); img.loading = 'eager';
         img.alt = `Teja Ondulada Perfil 7 de fibrocemento en color ${inp.dataset.nombre.toLowerCase()}`;
         (capas.at(-1) || baseTeja).after(nueva);
-        const mostrar = () => requestAnimationFrame(() => {
+        fotoLista(img).then(() => requestAnimationFrame(() => {
+          if (mio !== turno) return; // ya se eligió otro color (o el gris): esta capa no aparece
           nueva.style.opacity = '1';
           setTimeout(() => capas.forEach((c) => c.remove()), 550);
-        });
-        img.decode().then(mostrar, mostrar);
+        }));
       });
     });
   }

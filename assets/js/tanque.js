@@ -50,24 +50,31 @@
     precargadas.add(id);
     const i = new Image(); i.sizes = '(min-width: 1000px) 46vw, 100vw'; i.srcset = D.fotos[id].webp;
   };
+  // Foto por capas, con la misma regla que el color de la teja en eternit.js: la capa nueva aparece cuando su foto
+  // ya se puede pintar y solo entonces se quitan las que había; si se elige otro tanque antes, esa capa no aparece
+  // y la quita la elección más nueva. Antes, dos cambios seguidos se borraban entre sí y la foto quedaba vacía.
+  const fotoLista = (img) => img.decode().catch(() => (img.complete ? null
+    : new Promise((listo) => { img.addEventListener('load', listo, { once: true }); img.addEventListener('error', listo, { once: true }); })));
+  const molde = escena && $('.img', escena)?.cloneNode(true); // la foto del HTML, guardada antes de que otra la reemplace
+  if (molde) { molde.style.viewTransitionName = 'none'; $('img', molde).removeAttribute('fetchpriority'); }
+  let turno = 0;
   const cambiarFoto = (r, animar) => {
-    const actual = $$('.img', escena).at(-1);
-    if (!actual || actual.dataset.tanque === r.id) return;
-    const nueva = actual.cloneNode(true);
+    const previas = $$('.img', escena), ultima = previas.at(-1);
+    if (!molde || !D.fotos[r.id] || ultima?.dataset.tanque === r.id) return; // la última pedida ya es ese tanque
+    const mio = ++turno;
+    const nueva = molde.cloneNode(true);
     nueva.dataset.tanque = r.id;
-    nueva.style.viewTransitionName = 'none';
     nueva.style.opacity = animar ? '0' : '1';
     $('source[type="image/avif"]', nueva).srcset = D.fotos[r.id].avif;
     $('source[type="image/webp"]', nueva).srcset = D.fotos[r.id].webp;
     const img = $('img', nueva);
-    img.removeAttribute('fetchpriority');
     img.alt = `${r.titulo} de Eternit`;
-    actual.after(nueva);
-    const mostrar = () => requestAnimationFrame(() => {
+    if (ultima) ultima.after(nueva); else escena.prepend(nueva); // debajo de la chapa con los litros
+    fotoLista(img).then(() => requestAnimationFrame(() => {
+      if (mio !== turno) return; // ya se eligió otro tanque: esta capa se va con las previas de esa elección
       nueva.style.opacity = '1';
-      setTimeout(() => $$('.img', escena).forEach((el) => el !== nueva && el.remove()), animar ? 700 : 0);
-    });
-    img.decode().then(mostrar, mostrar);
+      setTimeout(() => previas.forEach((el) => el.remove()), animar ? 700 : 0);
+    }));
   };
   const elegir = (id, { animar = true, url = true } = {}) => {
     const r = porId[id];
