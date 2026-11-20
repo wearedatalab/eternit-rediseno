@@ -458,7 +458,7 @@ p { text-wrap: pretty; }
 @keyframes subrayar { from { scale: 0 1; opacity: 0; } }
 .caminos { min-width: 0; color: var(--tinta); }
 .caminos__t { margin: 0 0 var(--espacio-2) var(--espacio-1); font: 800 var(--texto-base) var(--f-display); }
-.caminos ul { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--espacio-2); }
+.caminos ul { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--espacio-2); }
 .caminos a { position: relative; display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: var(--espacio-2); height: 100%; min-height: 64px; padding: var(--espacio-2) var(--espacio-3) var(--espacio-2) var(--espacio-2); border-radius: var(--radio-6); background: var(--papel); text-decoration: none; font-weight: 700; font-size: var(--texto-chico); line-height: 1.18; transition: background-color var(--duracion-corta), color var(--duracion-corta); }
 .caminos a .flecha { display: none; }
 .caminos a:hover { background: var(--tinta); color: var(--blanco); }
@@ -519,7 +519,7 @@ p { text-wrap: pretty; }
   .portada__barra { padding: var(--espacio-4); border-radius: var(--radio); }
   .portada__titulo { display: grid; font-size: var(--titulo-2); }
   .caminos ul { grid-template-columns: 1fr 1fr; gap: var(--espacio-2); }
-  .caminos li:last-child { grid-column: 1 / -1; }
+  .caminos li:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .caminos a { grid-template-columns: 1fr; justify-items: start; gap: var(--espacio-2); padding: var(--espacio-3); border-radius: var(--radio-5); }
   .caminos__ico { background: var(--blanco); }
 }
@@ -1697,32 +1697,68 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
 }
 
 /* ==========================================================================
-   Portal · visualizador de paredes (solo distribuidores)
+   Visualizador de paredes (página pública; hasta el 2026-11-18 estuvo en el portal)
    ========================================================================== */
-.portal__menu nav a[aria-current='page'] { background: var(--blanco); color: var(--tinta); }
-.portal__menu nav a[aria-current='page'] .ico { color: var(--rojo); }
-.portal__menu-nuevo em { margin-left: auto; padding: var(--espacio-1) var(--espacio-2); border-radius: 99px; background: var(--rojo); color: var(--blanco); font: 800 var(--texto-etiqueta)/1.2 var(--f-sans); font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+/* Encabezado: texto y muestrario de acabados (cada muestra deja elegido su acabado en la herramienta) */
+.vz-hero__in { max-width: var(--max); margin-inline: auto; padding: var(--espacio-2) var(--margen) clamp(var(--espacio-12), 6vw, var(--espacio-20)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(var(--espacio-8), 5vw, var(--espacio-16)); align-items: center; }
+.vz-hero__texto { display: grid; gap: var(--espacio-6); justify-items: start; }
+.vz-hero__texto .etiqueta { margin-bottom: 0; }
+.vz-hero__titulo { max-width: 15ch; font-size: var(--titulo-1); font-weight: 800; font-stretch: 106%; line-height: 1.02; letter-spacing: -.035em; }
+.vz-hero__titulo em { font-style: normal; color: var(--rojo); }
+.vz-hero__bajada { max-width: 52ch; color: var(--gris); font-size: var(--texto-grande); }
+.vz-hero__acciones { display: flex; flex-wrap: wrap; gap: var(--espacio-3); }
+.vz-hero__acciones .btn .ico { width: 20px; height: 20px; }
+.vz-hero__datos { display: flex; flex-wrap: wrap; gap: var(--espacio-2); }
+.vz-hero__datos li { padding: var(--espacio-2) var(--espacio-4); border-radius: 99px; background: var(--blanco); box-shadow: inset 0 0 0 1px var(--linea); color: var(--gris); font-size: var(--texto-chico); }
+.vz-hero__datos strong { margin-right: .3em; color: var(--tinta); font: 800 1rem var(--f-display); }
+.vz-muestrario { padding: clamp(var(--espacio-4), 2vw, var(--espacio-6)); border-radius: var(--radio-l); background: var(--blanco); box-shadow: var(--sombra); }
+.vz-muestrario__t { margin: 0 0 var(--espacio-3) var(--espacio-1); color: var(--gris); font-size: var(--texto-chico); font-weight: 700; }
+.vz-muestrario__lista { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--espacio-2); }
+.vz-muestra { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; border-radius: var(--radio-4); background: var(--papel); color: var(--blanco); transition: transform var(--duracion-media) var(--ease); }
+.vz-muestra img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--duracion-larga) var(--ease); }
+.vz-muestra__txt { position: absolute; inset: auto 0 0; padding: var(--espacio-6) var(--espacio-2) var(--espacio-2); background: linear-gradient(transparent, rgb(18 17 16 / .82)); }
+.vz-muestra__txt strong { display: block; font-size: var(--texto-chico); line-height: 1.15; }
+.vz-muestra__txt small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.vz-muestra:focus-visible { outline: 3px solid var(--rojo); outline-offset: 3px; }
+@media (hover: hover) {
+  .vz-muestra:hover { transform: translateY(-4px); }
+  .vz-muestra:hover img { transform: scale(1.06); }
+}
 
-/* Tarjeta «Nuevo» en el inicio del portal */
-.portal__promo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--espacio-4) var(--espacio-6); margin: 0 0 var(--espacio-8); padding: var(--espacio-4) var(--espacio-4) var(--espacio-4) var(--espacio-4); border-radius: var(--radio-6); background: var(--blanco); color: var(--gris); text-decoration: none; box-shadow: 0 18px 40px rgb(80 0 4 / .25); transition: transform var(--duracion-media) var(--ease); }
-.portal__promo:hover { transform: translateY(-3px); box-shadow: 0 24px 50px rgb(80 0 4 / .32); }
-.portal__promo-fotos { display: flex; padding-left: var(--espacio-4); }
-.portal__promo-fotos img { width: 76px; height: 76px; margin-left: -1rem; border-radius: var(--radio-5); object-fit: cover; box-shadow: 0 0 0 3px var(--blanco), 0 8px 16px rgb(18 17 16 / .2); transition: transform var(--duracion-media) var(--ease); }
-.portal__promo-fotos img:nth-child(1) { rotate: -7deg; }
-.portal__promo-fotos img:nth-child(2) { position: relative; z-index: 1; }
-.portal__promo-fotos img:nth-child(3) { rotate: 6deg; }
-.portal__promo:hover .portal__promo-fotos img:nth-child(1) { transform: translateX(-7px); }
-.portal__promo:hover .portal__promo-fotos img:nth-child(3) { transform: translateX(7px); }
-.portal__promo-txt { display: grid; gap: var(--espacio-1); font-size: var(--texto-chico); line-height: 1.4; }
-.portal__promo-txt em { justify-self: start; padding: var(--espacio-1) var(--espacio-3); border-radius: 99px; background: var(--rojo); color: var(--blanco); font: 800 var(--texto-etiqueta)/1.2 var(--f-sans); font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
-.portal__promo-txt strong { color: var(--tinta); font: 800 var(--titulo-4)/1.1 var(--f-display); letter-spacing: -.01em; }
-.portal__promo-ir { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: var(--rojo); color: var(--blanco); }
-.portal__promo-ir .flecha { width: 22px; height: 22px; }
-.portal__promo:hover .flecha { transform: translateX(3px); }
+/* Qué puedes hacer y para quién es */
+.vz-puedes { padding-block: clamp(var(--espacio-4), 2vw, var(--espacio-8)) clamp(var(--espacio-12), 6vw, var(--espacio-20)); }
+.vz-puedes__lista { max-width: var(--max); margin-inline: auto; padding-inline: var(--margen); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--espacio-3); }
+.vz-puedes__lista li, .vz-sirve__lista li { display: grid; gap: var(--espacio-3); align-content: start; padding: var(--espacio-6) var(--espacio-6) var(--espacio-8); border-radius: var(--radio); }
+.vz-puedes__lista li { background: var(--blanco); box-shadow: var(--sombra); }
+.vz-puedes__ico, .vz-sirve__ico { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: var(--papel); color: var(--rojo); }
+.vz-puedes__ico .ico, .vz-sirve__ico .ico { width: 26px; height: 26px; }
+.vz-puedes__lista h3, .vz-sirve__lista h3 { font-size: var(--titulo-4); }
+.vz-puedes__lista p { color: var(--gris); }
+.vz-sirve__lista { max-width: var(--max); margin-inline: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--espacio-3); }
+.vz-sirve__lista li { background: rgb(255 253 249 / .06); box-shadow: inset 0 0 0 1px var(--linea-clara); }
+.vz-sirve__ico { background: var(--rojo); color: var(--blanco); }
+.vz-sirve__lista p { color: rgb(255 253 249 / .75); }
+
+/* La herramienta, en una tarjeta propia; el ancla #probar solo se corre lo que pide el html */
+.vz-herramienta { width: min(var(--max), 100% - 2 * var(--margen)); margin: 0 auto clamp(var(--espacio-12), 6vw, var(--espacio-20)); padding: clamp(var(--espacio-6), 3vw, var(--espacio-10)); border-radius: var(--radio-l); background: var(--blanco); box-shadow: var(--sombra); }
+.p-visualizador .visor { scroll-margin-top: 0; }
+.vz-herramienta .visor__titulo { font-size: var(--titulo-2); }
+.vz-herramienta .visor__cab .etiqueta { margin-bottom: var(--espacio-3); }
+
+/* Cierre: muestras redondas sobre el rojo */
+.vz-cierre__muestras { display: flex; justify-content: center; padding: var(--espacio-4) 0 var(--espacio-8) var(--espacio-6); }
+.vz-cierre__muestras img { width: clamp(88px, 10vw, 150px); aspect-ratio: 1; margin-left: calc(-1 * var(--espacio-6)); border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 4px var(--blanco), 0 18px 40px rgb(80 0 4 / .35); }
+.vz-cierre__muestras img:nth-child(odd) { rotate: -6deg; }
+.vz-cierre__muestras img:nth-child(even) { translate: 0 18px; }
+
+@media (max-width: 1100px) { .vz-puedes__lista { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .vz-hero__in { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) {
-  .portal__promo { grid-template-columns: minmax(0, 1fr) auto; padding: var(--espacio-4); }
-  .portal__promo-fotos { grid-column: 1 / -1; }
-  .portal__promo-fotos img { width: 60px; height: 60px; }
+  .vz-muestrario { padding: var(--espacio-3); }
+  /* En celular, dos filas que se deslizan de lado: se ven tres columnas y asoma la cuarta */
+  .vz-muestrario__lista { grid-template-columns: none; grid-template-rows: repeat(2, auto); grid-auto-flow: column; grid-auto-columns: 28%; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding-bottom: var(--espacio-2); }
+  .vz-muestra { scroll-snap-align: start; }
+  .vz-puedes__lista { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* La herramienta */
@@ -1734,12 +1770,12 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
 .visor__bajada { max-width: 60ch; margin-top: var(--espacio-2); color: var(--gris); font-size: var(--texto-grande); }
 .visor__pasos { display: flex; flex-wrap: wrap; gap: var(--espacio-1); }
 .visor__pasos li { display: inline-flex; align-items: center; gap: var(--espacio-2); padding: var(--espacio-1) var(--espacio-3) var(--espacio-1) var(--espacio-1); border-radius: 99px; background: var(--papel); color: var(--gris); font-size: var(--texto-chico); font-weight: 700; transition: background-color var(--duracion-media), color var(--duracion-media); }
-.visor__pasos li > span { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--blanco); box-shadow: inset 0 0 0 1px var(--linea); color: var(--tinta); font: 800 var(--texto-chico) var(--f-display); }
+.visor__pasos li > span:first-child { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--blanco); box-shadow: inset 0 0 0 1px var(--linea); color: var(--tinta); font: 800 var(--texto-chico) var(--f-display); }
 .visor__pasos li.actual { background: var(--tinta); color: var(--blanco); }
-.visor__pasos li.actual > span { background: var(--rojo); box-shadow: none; color: var(--blanco); }
+.visor__pasos li.actual > span:first-child { background: var(--rojo); box-shadow: none; color: var(--blanco); }
 .visor__pasos li.hecho { color: var(--tinta); }
-.visor__pasos li.hecho > span { position: relative; background: var(--tinta); box-shadow: none; color: transparent; }
-.visor__pasos li.hecho > span::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--blanco); font-size: var(--texto-etiqueta); }
+.visor__pasos li.hecho > span:first-child { position: relative; background: var(--tinta); box-shadow: none; color: transparent; }
+.visor__pasos li.hecho > span:first-child::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--blanco); font-size: var(--texto-etiqueta); }
 .visor__aviso { margin-bottom: var(--espacio-4); padding: var(--espacio-4) var(--espacio-4); border-radius: var(--radio-5); background: rgb(214 17 24 / .07); box-shadow: inset 0 0 0 1px rgb(214 17 24 / .2); color: var(--rojo-hondo); font-weight: 600; scroll-margin: calc(var(--cab-visible) + 14px) 0 1rem; }
 /* Nota: se puede seguir, pero conviene saberlo (foto pequeña, panorámica, resultado dudoso) */
 .visor__aviso--nota { background: #fff4dc; box-shadow: inset 0 0 0 1px rgb(176 112 0 / .28); color: #6a4500; }
@@ -1794,7 +1830,7 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
 /* Panel de pasos */
 .visor__panel { min-width: 0; }
 .visor__paso { display: grid; gap: var(--espacio-4); align-content: start; animation: aparecer var(--duracion-media) var(--ease); }
-.visor__paso h2 { font-size: var(--titulo-3); line-height: 1.1; }
+.visor__paso :is(h2, h3) { font-size: var(--titulo-3); line-height: 1.1; }
 .visor__paso > p { color: var(--gris); }
 .visor__consejos { display: grid; gap: var(--espacio-2); }
 .visor__consejos li { position: relative; padding-left: var(--espacio-8); color: var(--gris); }
@@ -1846,6 +1882,8 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
 .visor__privacidad .ico { width: 16px; height: 16px; flex: none; }
 
 /* Galería de la visita */
+.visor-galeria { margin-top: var(--espacio-8); padding-top: var(--espacio-6); border-top: 1px solid var(--linea); }
+.visor-galeria__t { font-size: var(--titulo-4); }
 .visor-galeria > p { margin-top: var(--espacio-2); color: var(--gris); }
 .visor-galeria__lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--espacio-3); margin-top: var(--espacio-4); }
 .visor-galeria__lista button { display: grid; gap: var(--espacio-2); width: 100%; padding: var(--espacio-2) var(--espacio-2) var(--espacio-2); border: 0; border-radius: var(--radio-5); background: var(--papel); color: var(--tinta); text-align: left; font: 700 var(--texto-chico) var(--f-sans); cursor: pointer; transition: transform var(--duracion-media) var(--ease); }
@@ -1860,7 +1898,8 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
   .visor__escena { position: relative; top: auto; }
 }
 @media (max-width: 640px) {
-  .visor__pasos li:not(.actual) { gap: 0; padding: var(--espacio-1); font-size: 0; }
+  .visor__pasos li:not(.actual) { gap: 0; padding: var(--espacio-1); }
+  .visor__pasos li:not(.actual) .visor__pasos-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .visor__soltar { min-height: 240px; padding: var(--espacio-6) var(--espacio-4); }
   .visor__soltar-ico { width: 64px; height: 64px; }
   .visor__acabados { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -2054,15 +2093,22 @@ html:has(.p-portal) { scroll-padding-top: 90px; }
 .opciones-home__muestra i + i { margin-left: -8px; }
 .menu-movil__opciones .opciones-home { padding: 0 var(--espacio-2) var(--espacio-3); }
 @media (max-width: 1080px) { .cab__cats .mega--opciones { display: none !important; } }
-/* Barra de categorías en laptops de 1081 a 1460 px: los rótulos largos se acortan a la vista (el nombre completo
-   sigue para lectores de pantalla) y el relleno baja, para que todo quepa sin cortarse. Por debajo de 1280 px,
-   «Pregúntale a Eternit» queda como botón de ícono (el chat flotante también lo abre). */
+/* Barra de categorías en laptops de 1081 a 1700 px: los rótulos largos se acortan a la vista (el nombre completo
+   sigue para lectores de pantalla) y el relleno baja, para que todo quepa sin cortarse. Desde que la barra tiene el
+   visualizador (nov. 2026), de 1461 a 1700 px (laptops al 125 %, como 1536 × 730) se acortan todos menos «Visualizador
+   de paredes». Hasta 1320 px, «Pregúntale a Eternit» queda como botón de ícono (el chat flotante también lo abre), y
+   hasta 1199 px «Calculadora de techo» sale de esta barra: sigue en «Calculadoras» de la barra roja. */
 @media (min-width: 1081px) and (max-width: 1460px) {
   .cab__cats > ul > li > a, .mega__abrir--texto { padding-inline: var(--espacio-3); }
   .cab__cats .cab__largo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
-@media (min-width: 1081px) and (max-width: 1279px) {
+@media (min-width: 1461px) and (max-width: 1700px) {
+  .cab__cats > ul > li > a, .mega__abrir--texto { padding-inline: var(--espacio-3); }
+  .cab__cats .cab__largo:not(.cab__largo--visor) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (min-width: 1081px) and (max-width: 1320px) {
   .cab__cats > ul > li > a, .mega__abrir--texto { padding-inline: var(--espacio-2); }
   .cab__cats .cab__ia-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cab__cats .cab__ia button { width: 44px; height: 44px; padding: 0; justify-content: center; }
 }
+@media (min-width: 1081px) and (max-width: 1199px) { .cab__cats .cab__calc { display: none; } }

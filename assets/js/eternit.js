@@ -745,7 +745,7 @@
     const obs = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) enlaces.forEach((a) => a.setAttribute('aria-current', String(a.hash === `#${e.target.id}`)));
     }), { rootMargin: '-30% 0px -65% 0px' });
-    // Solo las anclas de esta misma página: el enlace al visualizador no tiene ancla (querySelector('') fallaría)
+    // Solo las anclas de esta misma página: un enlace sin ancla haría fallar querySelector('')
     const anclas = enlaces.filter((a) => a.hash && a.pathname === location.pathname && $(a.hash));
     anclas.forEach((a) => obs.observe($(a.hash)));
     // La última sección es corta y nunca llega a la franja que se observa: al final de la página, se resalta ella

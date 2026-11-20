@@ -1,15 +1,17 @@
-/* Visualizador de paredes · portal de distribuidores Eternit.
+/* Visualizador de paredes · página pública de Eternit (hasta el 2026-11-18 fue una herramienta del portal de distribuidores).
    Pasos: foto → zona (opcional) → acabado → resultado.
    · Cada foto se normaliza en el navegador, venga del celular que venga: derecha (con la orientación que guardó la
      cámara), con lado largo de 2.048 px, y con bandas de relleno hasta la proporción exacta que acepta la IA (4:3,
      3:4, 16:9…). Al volver, las bandas se quitan: el resultado queda alineado píxel a píxel con la foto, sea
      vertical, horizontal, panorámica o una captura de pantalla.
-   · La foto viaja al servidor del portal (/api/visualizador), que llama al servicio de IA con la clave guardada en su
-     entorno: la clave nunca llega al navegador.
+   · La foto viaja al servidor del visualizador (/api/visualizador; en línea, la función en la nube), que llama al
+     servicio de IA con la clave guardada en su entorno: la clave nunca llega al navegador.
    · Con zonas marcadas, la IA recibe la foto con la zona resaltada y una máscara; al volver, el resultado se usa solo
      dentro de las zonas: el resto de la foto queda idéntico al original.
    · La imagen que se descarga o se comparte lleva el rótulo «Imagen ilustrativa», el acabado y el logo.
-   · Las simulaciones de la visita viven solo en memoria (galería): se borran al cerrar la página. */
+   · Las simulaciones de la visita viven solo en memoria (galería): se borran al cerrar la página.
+   · Las muestras de acabados de la página ([data-vz-probar]) dejan elegido ese acabado y llevan a la herramienta;
+     desde otra página llegan con ?acabado=<id>. */
 (() => {
   const visor = document.querySelector('[data-visor]');
   if (!visor) return;
@@ -34,22 +36,22 @@
 
   // Avisos: «error» (rojo) cuando algo no se pudo hacer; «nota» (ámbar) cuando se puede seguir pero conviene saberlo
   const aviso = $('[data-visor-aviso]');
-  const avisar = (texto, tipo = 'error') => {
+  const avisar = (texto, tipo = 'error', { mover = true } = {}) => {
     aviso.textContent = texto || '';
     aviso.hidden = !texto;
     aviso.classList.toggle('visor__aviso--nota', tipo === 'nota');
-    if (texto) {
+    if (texto && mover) {
       const r = aviso.getBoundingClientRect();
       if (r.top < 70 || r.bottom > innerHeight) aviso.scrollIntoView({ block: 'center', behavior: reducir.matches ? 'auto' : 'smooth' });
     }
   };
 
-  // ¿El servidor del portal está listo para simular?
+  // ¿El servidor del visualizador está listo para simular?
   fetch(`${API}/estado`)
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then((d) => {
-      if (!d.configurado) avisar('El visualizador no está configurado en este servidor: falta la clave del servicio de IA. Avísale al administrador del portal.');
-      else if (!d.restantes) avisar(`Se alcanzó el límite de ${d.limite} simulaciones por ${d.periodo || 'hora'} de esta demo. Intenta de nuevo más tarde.`);
+      if (!d.configurado) avisar('El visualizador no está disponible en este momento. Intenta de nuevo más tarde.');
+      else if (!d.restantes) avisar(`Se acabaron las simulaciones de esta demo por ${d.periodo === 'día' ? 'hoy' : 'esta hora'} (el tope es de ${d.limite}). Vuelve a intentarlo ${d.periodo === 'día' ? 'mañana' : 'en un rato'}.`);
     })
     .catch(() => avisar('No hay conexión con el servicio de simulación. Revisa tu conexión a internet y recarga la página.'));
 
@@ -71,7 +73,7 @@
     comparar.hidden = paso !== 'resultado';
     pintarZonas();
     if (enfocar) {
-      const titulo = $(`[data-paso-panel="${paso}"] h2`);
+      const titulo = $(`[data-paso-panel="${paso}"] :is(h2, h3)`);
       titulo?.focus({ preventScroll: true });
       // Lo que se usa en cada paso queda completo a la vista, bajo la cabecera fija. En dos columnas se toma el bloque
       // completo (la foto se queda fija al bajar y no sirve de guía); apiladas (celular y tableta), la foto para marcar
@@ -315,7 +317,7 @@
     }, 500);
   };
   // Versión para descargar y compartir: rótulo «Imagen ilustrativa» con el acabado y el logo de Eternit
-  const LOGO = document.querySelector('.cab-portal__logo img')?.src;
+  const LOGO = visor.dataset.logo;
   const pastilla = (g, x, y, w, h) => { g.beginPath(); if (g.roundRect) g.roundRect(x, y, w, h, h / 2); else g.rect(x, y, w, h); g.fill(); };
   const marcar = async (src, nombre) => {
     const [foto, logo] = await Promise.all([imagen(src), LOGO ? imagen(LOGO).catch(() => null) : null]);
@@ -341,7 +343,7 @@
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) });
     const d = await r.json().catch(() => ({}));
     d.imagen ||= d.imagen_url; // si la imagen pesa más de lo que deja responder la nube, llega su dirección
-    if (!r.ok || !d.imagen) throw new Error(d.error || `El servidor del portal respondió con un error (${r.status}). Intenta de nuevo en un momento.`);
+    if (!r.ok || !d.imagen) throw new Error(d.error || `El visualizador respondió con un error (${r.status}). Intenta de nuevo en un momento.`);
     return d;
   };
   // Foto y guía en JPEG: si juntas pasan del tope de envío, se repiten con menos calidad (la guía solo marca la zona)
@@ -384,7 +386,7 @@
       const marcada = await marcar(despues, elegido.dataset.nombre);
       mostrar({ antes: e.foto, ancho: e.ancho, alto: e.alto, zonas: e.zonas.map((z) => z.slice()), despues, marcada, acabado: elegido.value, nombre: elegido.dataset.nombre, segundos, modelo: d.modelo });
     } catch (err) {
-      avisar(err instanceof TypeError ? 'Sin conexión con el servidor del portal. Revisa tu conexión a internet y vuelve a intentarlo.' : err.message);
+      avisar(err instanceof TypeError ? 'Sin conexión con el visualizador. Revisa tu conexión a internet y vuelve a intentarlo.' : err.message);
     } finally {
       esperar(false);
     }
@@ -401,7 +403,7 @@
     usarFoto(s.antes, s.ancho, s.alto, s.zonas);
     $('[data-visor-antes]').src = s.antes;
     $('[data-visor-despues]').src = s.despues;
-    $('[data-visor-resumen]').replaceChildren('Eterboard Design ', strong(s.nombre), `${s.segundos ? `, lista en ${s.segundos} s` : ''}${s.modelo ? ` con ${s.modelo}` : ''}. Desliza sobre la foto para comparar el antes y el después.`);
+    $('[data-visor-resumen]').replaceChildren('Eterboard Design ', strong(s.nombre), `${s.segundos ? `, lista en ${s.segundos} s` : ''}. Desliza sobre la foto para comparar el antes y el después.`);
     const d = $('[data-visor-descargar]');
     d.href = s.marcada; d.download = `eternit-${s.acabado}.jpg`;
     rango.value = 50; cortar();
@@ -432,6 +434,32 @@
     }
   } catch { /* sin Web Share */ }
   $('[data-visor-nueva]').addEventListener('click', () => { Object.assign(e, { foto: null, zonas: [], actual: [] }); avisar(''); ir('foto'); });
+
+  /* ---------- Muestras de la página: «probar este acabado» ---------- */
+  // Dejan elegido el acabado y llevan a la herramienta. Sin foto, señalan dónde subirla; con un resultado en pantalla,
+  // vuelven al paso del acabado para generarlo con el nuevo sobre la misma foto.
+  document.querySelectorAll('[data-vz-probar]').forEach((a) => a.addEventListener('click', (ev) => {
+    const r = $(`input[name="acabado"][value="${a.dataset.vzProbar}"]`);
+    if (!r) return;
+    ev.preventDefault();
+    r.checked = true;
+    r.dispatchEvent(new Event('change'));
+    const paso = visor.dataset.paso, nombre = r.dataset.nombre;
+    if (paso === 'resultado') ir('acabado');
+    else visor.scrollIntoView({ behavior: reducir.matches ? 'auto' : 'smooth', block: 'start' });
+    if (!e.foto) $('[data-visor-soltar] input')?.focus({ preventScroll: true });
+    avisar(!e.foto ? `Elegiste ${nombre}. Ahora sube la foto de tu pared y te mostramos cómo queda.`
+      : paso === 'zona' ? `Elegiste ${nombre}. Marca la zona y en el paso 3 ya estará elegido.`
+        : `Elegiste ${nombre}. Toca «Ver cómo queda» para probarlo en tu foto.`, 'nota', { mover: false });
+  }));
+  // Desde otra página (el muestrario de Construcción en seco): ?acabado=<id> llega con ese acabado ya elegido
+  const pedido = new URLSearchParams(location.search).get('acabado');
+  const deAfuera = pedido && $(`input[name="acabado"][value="${CSS.escape(pedido)}"]`);
+  if (deAfuera) {
+    deAfuera.checked = true;
+    deAfuera.dispatchEvent(new Event('change'));
+    avisar(`Elegiste ${deAfuera.dataset.nombre}. Ahora sube la foto de tu pared y te mostramos cómo queda.`, 'nota', { mover: false });
+  }
 
   ir('foto', false);
 })();

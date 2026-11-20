@@ -11,7 +11,13 @@ Demo navegable de la propuesta de DataLab para el sitio de Eternit Colombia.
 
 Desde cualquier página se pasa de una opción a otra con el menú «Opciones de home».
 
-Es una demo: las páginas llevan `noindex` para que no salgan en buscadores y el ingreso de distribuidores es un prototipo que no envía ni guarda lo que se escribe. El visualizador de paredes sí genera simulaciones, con un tope diario.
+## Visualizador de paredes
+
+- Página pública: <https://wearedatalab.github.io/eternit-rediseno/visualizador/>
+
+Se sube la foto de una pared, techo o fachada y se ve cómo queda con los acabados Eterboard Design. Genera simulaciones de verdad, con un tope diario. La dirección anterior, dentro del portal de distribuidores, lleva a esta.
+
+Es una demo: las páginas llevan `noindex` para que no salgan en buscadores y el ingreso de distribuidores es un prototipo que no envía ni guarda lo que se escribe.
 
 Este repositorio solo tiene el sitio ya armado (HTML, CSS, JavaScript e imágenes). No se edita a mano: se vuelve a generar desde el proyecto de origen.
 
