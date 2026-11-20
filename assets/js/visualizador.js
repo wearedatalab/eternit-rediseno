@@ -1,10 +1,10 @@
-/* Visualizador de paredes · página pública de Eternit (hasta el 2026-11-18 fue una herramienta del portal de distribuidores).
+/* Simulador de ambientes de Eternit (antes «Visualizador de paredes», una herramienta del portal de distribuidores).
    Pasos: foto → zona (opcional) → acabado → resultado.
    · Cada foto se normaliza en el navegador, venga del celular que venga: derecha (con la orientación que guardó la
      cámara), con lado largo de 2.048 px, y con bandas de relleno hasta la proporción exacta que acepta la IA (4:3,
      3:4, 16:9…). Al volver, las bandas se quitan: el resultado queda alineado píxel a píxel con la foto, sea
      vertical, horizontal, panorámica o una captura de pantalla.
-   · La foto viaja al servidor del visualizador (/api/visualizador; en línea, la función en la nube), que llama al
+   · La foto viaja al servidor del simulador (/api/visualizador; en línea, la función en la nube), que llama al
      servicio de IA con la clave guardada en su entorno: la clave nunca llega al navegador.
    · Con zonas marcadas, la IA recibe la foto con la zona resaltada y una máscara; al volver, el resultado se usa solo
      dentro de las zonas: el resto de la foto queda idéntico al original.
@@ -46,11 +46,11 @@
     }
   };
 
-  // ¿El servidor del visualizador está listo para simular?
+  // ¿El servidor del simulador está listo para simular?
   fetch(`${API}/estado`)
     .then((r) => (r.ok ? r.json() : Promise.reject()))
     .then((d) => {
-      if (!d.configurado) avisar('El visualizador no está disponible en este momento. Intenta de nuevo más tarde.');
+      if (!d.configurado) avisar('El simulador no está disponible en este momento. Intenta de nuevo más tarde.');
       else if (!d.restantes) avisar(`Se acabaron las simulaciones de esta demo por ${d.periodo === 'día' ? 'hoy' : 'esta hora'} (el tope es de ${d.limite}). Vuelve a intentarlo ${d.periodo === 'día' ? 'mañana' : 'en un rato'}.`);
     })
     .catch(() => avisar('No hay conexión con el servicio de simulación. Revisa tu conexión a internet y recarga la página.'));
@@ -343,7 +343,7 @@
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) });
     const d = await r.json().catch(() => ({}));
     d.imagen ||= d.imagen_url; // si la imagen pesa más de lo que deja responder la nube, llega su dirección
-    if (!r.ok || !d.imagen) throw new Error(d.error || `El visualizador respondió con un error (${r.status}). Intenta de nuevo en un momento.`);
+    if (!r.ok || !d.imagen) throw new Error(d.error || `El simulador respondió con un error (${r.status}). Intenta de nuevo en un momento.`);
     return d;
   };
   // Foto y guía en JPEG: si juntas pasan del tope de envío, se repiten con menos calidad (la guía solo marca la zona)
@@ -386,7 +386,7 @@
       const marcada = await marcar(despues, elegido.dataset.nombre);
       mostrar({ antes: e.foto, ancho: e.ancho, alto: e.alto, zonas: e.zonas.map((z) => z.slice()), despues, marcada, acabado: elegido.value, nombre: elegido.dataset.nombre, segundos, modelo: d.modelo });
     } catch (err) {
-      avisar(err instanceof TypeError ? 'Sin conexión con el visualizador. Revisa tu conexión a internet y vuelve a intentarlo.' : err.message);
+      avisar(err instanceof TypeError ? 'Sin conexión con el simulador. Revisa tu conexión a internet y vuelve a intentarlo.' : err.message);
     } finally {
       esperar(false);
     }

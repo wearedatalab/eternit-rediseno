@@ -11,11 +11,11 @@ Demo navegable de la propuesta de DataLab para el sitio de Eternit Colombia.
 
 Desde cualquier página se pasa de una opción a otra con el menú «Opciones de home».
 
-## Visualizador de paredes
+## Simulador de ambientes
 
-- Página pública: <https://wearedatalab.github.io/eternit-rediseno/visualizador/>
+- Página pública: <https://wearedatalab.github.io/eternit-rediseno/simulador-de-ambientes/>
 
-Se sube la foto de una pared, techo o fachada y se ve cómo queda con los acabados Eterboard Design. Genera simulaciones de verdad, con un tope diario. La dirección anterior, dentro del portal de distribuidores, lleva a esta.
+Se sube la foto de una pared, techo o fachada y se ve cómo queda con los acabados Eterboard Design. Genera simulaciones de verdad, con un tope diario. Antes se llamaba «Visualizador de paredes»: sus direcciones anteriores (`visualizador/` y la del portal de distribuidores) llevan a esta.
 
 Es una demo: las páginas llevan `noindex` para que no salgan en buscadores y el ingreso de distribuidores es un prototipo que no envía ni guarda lo que se escribe.
 
